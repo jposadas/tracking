@@ -1,23 +1,22 @@
-(function ($) {
+/* Tracking of Website */
 
-	var tracking = new Firebase('https://sweltering-fire-7687.firebaseio.com/tracking');
+(function(window, $, _undefined) {
 
-	$(document).ready(function () {
+	$(document).ready(function() {
+		
+		var tracking = new Firebase('https://sweltering-fire-7687.firebaseio.com/tracking');
 
-		$.ajax( { 
-		  url: 'http://freegeoip.net/json/', 
-		  type: 'POST', 
-		  dataType: 'jsonp',
-		  success: function(location) {
-		    console.log(location);
-		    tracking.push({ 
-		    	'time': getCurrentDate(),
-		    	'country_code': location.country_code,
-		    	'country': location.country_name,
-		    	'ip_address': location.ip
-		    });
-		  }
-		});
+		$.get('http://ipinfo.io', function(response) {
+
+			tracking.push({
+				'date': getCurrentDate(),
+				'ip': response.ip,
+				'city': response.city || '',
+				'region': response.region || '',
+				'country': response.country || ''
+			});
+
+		}, 'jsonp');
 
 		
 
@@ -26,7 +25,7 @@
 	var getCurrentDate = function() {
 		var d = new Date();
 
-		var month = d.getMonth()+1;
+		var month = d.getMonth() + 1;
 		var day = d.getDate();
 		var hour = d.getHours();
 		var minute = d.getMinutes();
@@ -42,11 +41,4 @@
 		return output;
 	};
 
-	$('#get-count').click(function() {
-		tracking.once('value', function(snapshot) {
-			var count = snapshot.numChildren();
-			console.log(count);
-		});
-	});
-
-})(jQuery);
+})(window, jQuery);
